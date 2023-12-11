@@ -1,31 +1,39 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Post;
 
 use Illuminate\Http\Request;
-use App\Models\Post;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $posts = Post::paginate(5);
+        $posts = Post::with('autor')->orderBy('titulo', 'ASC')->paginate(5);
         return view('posts.index', compact('posts'));
     }
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return "Create view";
+        // return "Nuevo post";
+        return 'Nou Post';
     }
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -34,56 +42,70 @@ class PostController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function show(string $id)
+    public function show($id)
     {
-
-        $post = Post::where('id', '=', $id)->get()[0];
-
-        return view("posts.show")->with(compact("post"));
-
+        $post = Post::with('autor')->findOrFail($id);
+        return view('posts.show', compact('post'));
     }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function edit(string $id)
+    public function edit($id)
     {
+        // return "Edición del post $id";
         return redirect()->route('inici');
-
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         //
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
+        //Comentario::where('post_id', $id)->delete();
         Post::findOrFail($id)->delete();
-        $posts = Post::get();
-        return view('posts.index', compact('posts'));
+        return redirect()->route('posts.index');
     }
-
-    public function nuevoPrueba(){
+    public function nuevoPrueba()
+    {
+        //
+        $x = rand();
         $post = new Post();
-        $post->titol = "La guerra de las galaxias";
-        $post->contigut = "George Lucas";
+        $post->titulo = 'Titulo '. $x;
+        $post->contenido = 'Contenido '. $x;
         $post->save();
-        return $post;
+        return redirect()->route('posts.show', $post->id);
     }
 
-    public function editarPrueba(string $id){
-        $postAModificar = Post::findOrFail($id);
-        $postAModificar->titol="Otro título";
-        $postAModificar->save();
-
-        return $postAModificar;
+    public function editarPrueba($id)
+    {
+        $x = rand();
+        $post = Post::findOrFail($id);
+        $post->titulo = 'Titulo '. $x;
+        $post->contenido = 'Contenido '. $x;
+        $post->save();
+        return redirect()->route('posts.show', $post->id);
     }
 }

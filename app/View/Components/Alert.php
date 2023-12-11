@@ -2,25 +2,40 @@
 
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 class Alert extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public $type;
+    public $message;
+    public $typeClasses;
+
+    public function __construct($type, $message)
     {
-        //
+        $this->type = $type;
+        $this->message = $message;
+
+        $this->typeClasses = $this->generateTypeClasses($type);
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function render()
     {
         return view('components.alert');
+    }
+
+    protected function generateTypeClasses($type)
+    {
+        switch ($type) {
+            case 'success':
+                return 'bg-green-500 text-white p-4 rounded-md';
+            case 'danger':
+                return 'bg-red-500 text-white p-4 rounded-md';
+            case 'warning':
+                return 'bg-yellow-500 text-white p-4 rounded-md';
+            case 'info':
+                return 'bg-blue-500 text-white p-4 rounded-md';
+            default:
+                return 'bg-gray-500 text-white p-4 rounded-md';
+        }
     }
 }

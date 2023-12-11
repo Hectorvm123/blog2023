@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,21 +18,38 @@ Route::get('/', function () {
     return view('welcome');
 })->name('inici');
 
-Route::get('posts', function() {
-    return view("posts.index");
-})->name('posts_llistat');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::fallback(function() {
-    return view("404");
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('posts/{id}', function($id) {
-    return view("posts.show")->with(compact("id"));
-})->where('id', "[0-9]+")->name('posts_fitxa');
+require __DIR__.'/auth.php';
 
+/*
+Route::get('posts', function () {
+    return 'LLISTAT DE POSTS';
+})->name('posts_listado');
 
-Route::get('post/nuevoPrueba', [PostController::class, 'nuevoPrueba']);
-Route::get('post/editarPrueba/{id}', [PostController::class, 'editarPrueba']);
-Route::resource('post', PostController::class);
+Route::get('posts/{id}', function ($id) {
+    return 'POST '.$id;
+})->where('id', '[0-9]+')
+    ->name('posts_ficha');
 
+Route::get('posts', function () {
+    return view('posts.listado');
+})->name('posts_listado');
 
+Route::get('posts/{id}', function ($id) {
+    return view('posts.ficha', compact('id'));
+})->where('id', '[0-9]+')
+    ->name('posts_ficha');
+*/
+
+Route::resource('posts',PostController::class)->only(['index','show','create','edit','destroy']);
+Route::get('posts/nuevoPrueba', 'PostController@nuevoPrueba')->name('nuevoPrueba');
+Route::get('posts/editarPrueba/{id}', 'PostController@editarPrueba')->name('editarPrueba');

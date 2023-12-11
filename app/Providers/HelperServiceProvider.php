@@ -11,7 +11,7 @@ class HelperServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        require_once base_path() . '/app/Helpers/myHelpers.php';
+        require_once base_path().'/app/Helpers/myHelpers.php';
     }
 
     /**
