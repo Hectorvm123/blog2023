@@ -1,0 +1,10 @@
+<html>
+    <head>
+        <title>@yield("titol")</title>
+    </head>
+    <body>
+        @yield('partials.nav')
+        @yield("contigut")
+    </body>
+    @yield('peu')
+</html>
